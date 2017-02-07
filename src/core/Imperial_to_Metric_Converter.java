@@ -1,6 +1,10 @@
 package core;
 
 import java.text.DecimalFormat;
+
+import javax.json.Json;
+import javax.json.JsonBuilderFactory;
+import javax.json.JsonObject;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -49,6 +53,7 @@ public class Imperial_to_Metric_Converter {
       
                    String kg_out = df.format(kg).toString();
                    String lb_out = df.format(lb).toString();
+                   
                    return "{\r\n\t\"calc\": {\r\n\t\t\"conversion\": \"kg to lb\", \r\n\t\t\"kg\": " + kg_out + ", \r\n\t\t\"lb\": " + lb_out + "\r\n\t\t}\r\n}";  }
       
       // http://localhost:89/RWS8/calc/json/lb=>kg/100       
@@ -62,7 +67,36 @@ public class Imperial_to_Metric_Converter {
       
                    String kg_out = df.format(kg).toString();
                    String lb_out = df.format(lb).toString();
-                   return "{\"calc\": {\"conversion\": \"lb to kg\", \"lb\": " + lb_out + ", \"kg\": " + kg_out + "}}";  }
+                   
+                   JsonBuilderFactory factory = Json.createBuilderFactory(null);
+                   JsonObject json = (JsonObject) factory.createObjectBuilder()
+                           .add("calc", factory.createObjectBuilder()            // adding root element
+
+                                  .add("conversion", "lb to kg")                  // adding object
+                                  .add("lb", lb_out)                              // adding object
+                                  .add("kg", kg_out)                              // adding object
+
+                                )
+
+                            .add("other conversions", factory.createArrayBuilder() // adding array
+
+                                   .add(factory.createObjectBuilder()              // adding object
+
+                                        .add("length", "cm to in")                 // adding object of array
+                                        .add("temperature", "C to F"))             // adding object of array
+
+                               )
+
+                           .build();
+                      
+                             //System.out.println(json);
+                   
+                   String out = json.toString();
+                   return out;
+
+                                            }
+                		   
+//return "{\"calc\": {\"conversion\": \"lb to kg\", \"lb\": " + lb_out + ", \"kg\": " + kg_out + "}}";  }
 }
 
 
